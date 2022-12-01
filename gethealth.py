@@ -12,27 +12,29 @@ class GetHealth(Command):
         )
     
     def execute(self, message, attachment_action, activity):
-
-        url = "https://<DNAC URL HERE>/api/system/v1/auth/token"     #DNAC URL HERE
+        #This splits the message into a list and selects the position to be passed for the mac_addr variable
+        url = "https://<DNAC URL>/api/system/v1/auth/token"
 
         payload = ""
         headers = {
-            'Authorization': 'Basic64 Auth'     #Basic64 Auth here
+            'Authorization': 'Basic64 Auth Here'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload, verify = False)     #Verification should be on in a production environment
+        response = requests.request("POST", url, headers=headers, data=payload, verify = False)     #Always verify your SSL connection in production
+
+        #print(response.status_code)     #This is good to enable when troubleshooting status codes in the console
 
         response = json.loads(response.text)
         
         token = (response['Token'])
         
-        url = "https://<DNAC URL:Port>/dna/intent/api/v1/network-health?startTime=&endTime="     #DNAC URL and Port
+        url = "https://<DNAC URL:PORT>/dna/intent/api/v1/network-health?startTime=&endTime="
 
         headers = {
             'x-auth-token': token
         }
 
-        response = requests.request("GET", url, headers=headers, data=payload, verify = False)     #Verification should be on in a production environment
+        response = requests.request("GET", url, headers=headers, data=payload, verify = False)     #Always verify your SSL connection in production
         
         
         response = json.loads(response.text)
@@ -41,7 +43,6 @@ class GetHealth(Command):
         WLCHealth = (str(WLCHealth[3]['healthScore']))
 
         
-        return  ("Global Health: " + GlobalHealth + ".\n"
-                 "WLC Health: " + WLCHealth
+        return  ("DNAC is reporting a Global Health Score of " + GlobalHealth + ".\n"
+                 "DNAC is reporting a WLC Health Score of " + WLCHealth + "."
         )
-       
